@@ -6,7 +6,7 @@ COPY server.js .
 COPY package*.json ./
 RUN npm install
 
-ARG PORT
+ARG PORT=3000
 EXPOSE $PORT
 
 CMD ["node", "server.js"]

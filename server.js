@@ -1,12 +1,59 @@
 const express = require('express');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
+const jwksClient = require('jwks-rsa');
 
 const app = express();
 
 const currentPort =  3000;
-const otherServers = process.env.OTHER_BACKENDS.split(',');
-const serverId = process.env.SERVER_ID;
+const otherServers = process.env.OTHER_BACKENDS?.split(',') ?? [];
+const serverId = process.env.SERVER_ID ?? 'server1';
 
+
+// Your AWS Cognito details
+const COGNITO_USER_POOL_ID = 'us-east-1_z1z0IBBHC';
+const COGNITO_REGION = 'us-east-1';
+const APP_CLIENT_ID = '4b6ci6m9neo5lqtespmd9rv1i4';
+const JWKS_URI = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
+
+// Initialize JWKS client
+const client = jwksClient({
+  jwksUri: JWKS_URI,
+});
+
+// Helper function to get signing key
+function getKey(header, callback) {
+  client.getSigningKey(header.kid, (err, key) => {
+    if (err) return callback(err);
+    const signingKey = key.publicKey || key.rsaPublicKey;
+    callback(null, signingKey);
+  });
+}
+
+function validateToken(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized: No token provided' });
+  }
+
+  jwt.verify(token, getKey, { algorithms: ['RS256'] }, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
+
+    console.log("AUDIENCE", decoded.aud);
+
+    // Validate the issuer (iss claim)
+    const expectedIssuer = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`;
+    if (decoded.iss !== expectedIssuer) {
+      return res.status(401).json({ error: 'Unauthorized: Invalid issuer' });
+    }
+
+    req.user = decoded;
+    next();
+  });
+}
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -55,6 +102,13 @@ app.post('/sync', async (req, res) => {
 app.get('/counter', (req, res) => {
     res.json({ counter });
 });
+
+app.get('/protected', validateToken, (req, res) => {
+    res.json({
+      message: 'This is a protected route',
+      user: req.user,
+    });
+  });
 
 const fetchCountFromServer = async (server) => {
     try {
