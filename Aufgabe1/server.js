@@ -10,7 +10,7 @@ function simulateLatency() {
     return new Promise(resolve => setTimeout(resolve, Math.random() * 200));
 }
 
-app.post('/increment', async (req, res) => {
+app.get('/increment', async (req, res) => {
     await simulateLatency();
     counter++;
     res.json({ counter });

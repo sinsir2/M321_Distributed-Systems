@@ -24,6 +24,8 @@ Aktuell werden alle Anfragen direkt an die öffentliche [PokeAPI](https://pokeap
 
 Deine Aufgabe ist es, ein Caching mit Redis im Backend (_server.js_) zu implementieren. Ziel ist, dass bereits abgerufene Pokémon-Daten nicht erneut von der PokeAPI geladen werden müssen.
 
+Bitte stelle sicher, dass die Daten nicht ewig nur aus dem Cache geladen werden.
+
 ### Schritte
 
 1. **Redis starten**

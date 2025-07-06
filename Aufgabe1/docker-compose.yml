@@ -10,6 +10,8 @@ services:
       - SERVER_ID=Server-1
     expose:
       - "3000"
+    ports:
+      - "3001:3000" 
 
   backend2:
     build:
@@ -20,6 +22,8 @@ services:
       - SERVER_ID=Server-2
     expose:
       - "3000"
+    ports:
+      - "3002:3000" 
 
   backend3:
     build:
@@ -30,7 +34,9 @@ services:
       - SERVER_ID=Server-3
     expose:
       - "3000"
-
+    ports:
+      - "3003:3000" 
+  
   nginx:
     image: nginx:latest
     ports:
