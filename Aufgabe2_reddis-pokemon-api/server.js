@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.get('/api/pokemon/:name', async (req, res) => {
   const name = req.params.name.toLowerCase();
 
