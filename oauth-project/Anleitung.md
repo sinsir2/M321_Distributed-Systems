@@ -1,8 +1,10 @@
-1. Realm erstellen
+# Setup Keycloak
+
+## 1. Realm erstellen
 
 Name: security-lab
 
-2. User anlegen
+## 2. User anlegen
 
 Username: testuser
 
@@ -10,20 +12,16 @@ Password: testpass
 
 Email Verified: on
 
-3. Client (unsicheres SPA) anlegen
+## 3. Client (unsicheres SPA) anlegen
 
 Client ID: spa-unsafe
 
 Client Type: Public
 
-Redirect URIs:
+Redirect URIs: http://localhost:5173/*
 
-http://localhost:5173/*
+Web Origins: * 
 
-Web Origins:
+# Frontend und Backend einrichten
 
-* (unsicher — absichtlich)
-
-Proof Key for Code Exchange (PKCE): on
-
-4. Client-Scopes (optional Standard)
+## Frontend
